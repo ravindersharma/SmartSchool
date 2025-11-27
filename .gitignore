@@ -1,0 +1,95 @@
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+*.log
+*.tlog
+*.cache
+*.pyc
+
+## Publish
+*.PublishSettings
+publish/
+out/
+
+## Packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+## Resharper / Rider
+_ReSharper*/
+*.[Rr]e[Ss]harper
+.idea/
+*.DotSettings.user
+
+## Visual Studio Code
+.vscode/
+.history/
+*.code-workspace
+
+## EF Core
+Migrations/ _migrations/
+**/Migrations/
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+## Application specific
+appsettings.Development.json
+appsettings.Local.json
+**/secrets.json
+**/*.Secret.*
+secrets.json
+local.settings.json
+
+## Environment files
+.env
+.env.*
+.env.local
+
+## Logs
+logs/
+*.log
+*.txt
+
+## OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Test results
+TestResults/
+coverage/
+*.trx
+*.coverlet.json
+
+## JetBrains
+.JetBrains/
+
+## Node (if future front-end included)
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+
+## Cache
+*.cache/
+.cache/
+.temp/
+.tmp/
+
+## Other
+*.pdb
+*.pid
+*.swp
+*.orig
