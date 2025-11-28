@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using SmartSchool.Application.Students.Interfaces;
 using SmartSchool.Domain.Entities;
 using SmartSchool.Infrastructure.Persistence;
 
 namespace SmartSchool.Infrastructure.Repositories;
 
-public class StudentRepository : IStudentRespository
+public class StudentRepository : IStudentRepository
 {
     private readonly SchoolDbContext _db;
 
