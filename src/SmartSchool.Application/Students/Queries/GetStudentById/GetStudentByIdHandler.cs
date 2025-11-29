@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
+using MapsterMapper;
 using MediatR;
 using SmartSchool.Application.Students.Dtos;
 using SmartSchool.Application.Students.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SmartSchool.Application.Students.Queries.GetStudentById
 {

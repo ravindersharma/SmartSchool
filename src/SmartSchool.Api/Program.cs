@@ -1,4 +1,5 @@
 using Serilog;
+using SmartSchool.Api.Configurations;
 using SmartSchool.Api.Endpoints;
 using SmartSchool.Application;
 using SmartSchool.Infrastructure;
@@ -7,38 +8,82 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddOpenApi();
-// serilog
-builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration));
+//Logging
+// serilog to get config from appsettings.json
+builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration).WriteTo.Console());
 
-
-// layers
+//Configuration and services
+//Layers
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+// Authentication + Authrization 
+builder.Services.AddAuthentication(opts =>
+{
+    opts.DefaultAuthenticateScheme = "Bearer";
+    opts.DefaultChallengeScheme = "Bearer";
+}).AddJwtBearer("Bearer", opts =>
+{
+    opts.SaveToken = true;
+    opts.TokenValidationParameters = AuthConfig.GetTokenValidationParameters(builder.Configuration);
+});
+
+builder.Services.AddAuthorization();
+
+
+//OpenApi
+builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();//optional
 
 
-// Auth
-builder.Services.AddAuthentication("Bearer").AddJwtBearer();
-
-
-
+//Build App
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+//Exception Handling Middleware for prod vs dev
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //Detailed error in dev
+    app.UseDeveloperExceptionPage();
 }
-// Add Middleware
-app.UseHttpsRedirection();
-app.UseSerilogRequestLogging();
+else
+{
+    //Firendly error in prod
+    app.UseExceptionHandler("/error");
+    //Minimal global exception Handlers
+    //app.UseExceptionHandler(errApp =>
+    //{
+    //    errApp.Run(async (ctx) =>
+    //    {
+    //        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    //        ctx.Response.ContentType = "application/json";
+    //        await ctx.Response.WriteAsJsonAsync(new { error = "An unexpected error occured" });
+    //    });
+    //});
+}
 
+//Swagger or OpenAPI for Development only
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();  // exposes openapi.json
+    //optional swagger ui development only
+    app.UseSwagger(); // swagger.json
+    app.UseSwaggerUI();  // UI
+}
+
+
+
+// Security
 app.UseAuthentication();
 app.UseAuthorization();
 
+//Loggine request 
+app.UseSerilogRequestLogging();
+//https rdeirection
+app.UseHttpsRedirection();
+
+//Map Endpoints
 app.MapStudentEndpoints();
 
 app.Run();

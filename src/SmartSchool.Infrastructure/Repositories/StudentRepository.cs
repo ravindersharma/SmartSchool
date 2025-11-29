@@ -9,10 +9,7 @@ public class StudentRepository : IStudentRepository
 {
     private readonly SchoolDbContext _db;
 
-    public StudentRepository(SchoolDbContext db)
-    {
-        _db = db;
-    }
+    public StudentRepository(SchoolDbContext db) => _db = db;
     public async Task<Student> AddAsync(Student student, CancellationToken ct)
     {
         _db.Students.Add(student);
@@ -22,6 +19,18 @@ public class StudentRepository : IStudentRepository
 
     public async Task<Student?> GetByIdAsync(Guid id, CancellationToken ct)
     {
-        return await _db.Students.FirstOrDefaultAsync(x => x.Id == id, ct);
+        return await _db.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+    }
+
+    public async Task<IEnumerable<Student>> GetPagedAsync(int poage, int pageSize, CancellationToken ct)
+    {
+        return await _db.Students.AsNoTracking().OrderBy(s => s.FullName).Skip((pageSize - 1) * pageSize).Take(pageSize).ToListAsync();
+    }
+
+    public async Task<Student> UpdateAsync(Student student, CancellationToken ct)
+    {
+        _db.Students.Update(student);
+        await _db.SaveChangesAsync(ct);
+        return student;
     }
 }

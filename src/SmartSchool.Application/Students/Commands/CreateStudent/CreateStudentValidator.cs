@@ -6,13 +6,9 @@ public class CreateStudentValidator : AbstractValidator<CreateStudentCommand>
 {
     public CreateStudentValidator()
     {
-        RuleFor(x => x.FirstName)
-            .NotEmpty().WithMessage("First name is required.")
-            .MaximumLength(50).WithMessage("First name cannot exceed 50 characters.");
-
-        RuleFor(x => x.LastName)
-            .NotEmpty().WithMessage("Last name is required.")
-            .MaximumLength(50).WithMessage("Last name cannot exceed 50 characters.");
+        RuleFor(x => x.FullName)
+            .NotEmpty().WithMessage("Full name is required.")
+            .MaximumLength(150).WithMessage("Full name cannot exceed 150 characters.");
 
         RuleFor(x => x.DOB)
             .LessThan(DateTime.Now).WithMessage("Date of birth must be in the past.");

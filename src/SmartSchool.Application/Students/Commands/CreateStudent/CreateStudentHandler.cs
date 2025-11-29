@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
+using MapsterMapper;
 using MediatR;
 using SmartSchool.Application.Students.Dtos;
 using SmartSchool.Application.Students.Interfaces;
@@ -23,16 +23,16 @@ namespace SmartSchool.Application.Students.Commands.CreateStudent
             var entity = new Student
             {
                 Id = Guid.NewGuid(),
-                FirstName = request.FirstName,  
-                LastName = request.LastName,
+                FullName = request.FullName.Trim(),  
                 DOB =request.DOB,
                 Grade = request.Grade,
+                CreatedAt = DateTime.UtcNow
             };
 
 
-            await _repo.AddAsync(entity,ct);
+            var saved=await _repo.AddAsync(entity,ct);
 
-            var dto=_mapper.Map<StudentDto>(entity);
+            var dto=_mapper.Map<StudentDto>(saved);
             return Result.Ok(dto);
         }
     }
