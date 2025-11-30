@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using FluentValidation;
 
 namespace SmartSchool.Api.Middlewares;
 
