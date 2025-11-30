@@ -26,7 +26,7 @@ builder.Services.AddAuthentication(opts =>
 }).AddJwtBearer("Bearer", opts =>
 {
     opts.SaveToken = true;
-    opts.TokenValidationParameters = AuthConfig.GetTokenValidationParameters(builder.Configuration);
+    opts.TokenValidationParameters = JwtConfig.GetTokenValidationParameters(builder.Configuration);
 });
 
 builder.Services.AddAuthorization();
