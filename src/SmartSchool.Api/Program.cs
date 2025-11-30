@@ -1,6 +1,7 @@
 using Serilog;
 using SmartSchool.Api.Configurations;
 using SmartSchool.Api.Endpoints;
+using SmartSchool.Api.Middlewares;
 using SmartSchool.Application;
 using SmartSchool.Infrastructure;
 
@@ -36,6 +37,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();//optional
 
+//register custom servies or middlerware before use them
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 //Build App
 var app = builder.Build();
@@ -49,18 +52,8 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    //Firendly error in prod
-    app.UseExceptionHandler("/error");
-    //Minimal global exception Handlers
-    //app.UseExceptionHandler(errApp =>
-    //{
-    //    errApp.Run(async (ctx) =>
-    //    {
-    //        ctx.Response.StatusCode = StatusCodes.Status500InternalServerError;
-    //        ctx.Response.ContentType = "application/json";
-    //        await ctx.Response.WriteAsJsonAsync(new { error = "An unexpected error occured" });
-    //    });
-    //});
+    //Firendly error in prod  . we commmented it out since we are using middlerware for error 
+    //app.UseExceptionHandler("/error");
 }
 
 //Swagger or OpenAPI for Development only
@@ -69,7 +62,11 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();  // exposes openapi.json
     //optional swagger ui development only
     app.UseSwagger(); // swagger.json
-    app.UseSwaggerUI();  // UI
+    app.UseSwaggerUI(c =>
+    {
+        c.RoutePrefix = string.Empty;   // Load Swagger at "/"
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");    // IMPORTANT: starts with '/'
+    });
 }
 
 
@@ -83,8 +80,14 @@ app.UseSerilogRequestLogging();
 //https rdeirection
 app.UseHttpsRedirection();
 
+
+//custom middlewares should be befor http verbs because they break the pipline 
+app.UseMiddleware<ExceptionMiddleware>();
+
 //Map Endpoints
 app.MapStudentEndpoints();
+
+
 
 app.Run();
 

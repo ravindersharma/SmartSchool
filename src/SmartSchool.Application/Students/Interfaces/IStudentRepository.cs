@@ -8,6 +8,7 @@ namespace SmartSchool.Application.Students.Interfaces
         Task<Student?> GetByIdAsync(Guid Id, CancellationToken ct);
         Task<IEnumerable<Student>> GetPagedAsync(int page, int pageSize, CancellationToken ct);
         Task<Student> UpdateAsync(Student student, CancellationToken ct);
+        Task DeleteAsync(Student student, CancellationToken ct);
 
     }
 }

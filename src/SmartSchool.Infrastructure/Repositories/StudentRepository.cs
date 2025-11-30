@@ -22,9 +22,9 @@ public class StudentRepository : IStudentRepository
         return await _db.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
-    public async Task<IEnumerable<Student>> GetPagedAsync(int poage, int pageSize, CancellationToken ct)
+    public async Task<IEnumerable<Student>> GetPagedAsync(int page, int pageSize, CancellationToken ct)
     {
-        return await _db.Students.AsNoTracking().OrderBy(s => s.FullName).Skip((pageSize - 1) * pageSize).Take(pageSize).ToListAsync();
+        return await _db.Students.AsNoTracking().OrderBy(s => s.FullName).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
     }
 
     public async Task<Student> UpdateAsync(Student student, CancellationToken ct)
@@ -32,5 +32,12 @@ public class StudentRepository : IStudentRepository
         _db.Students.Update(student);
         await _db.SaveChangesAsync(ct);
         return student;
+    }
+
+
+    public async Task DeleteAsync(Student student, CancellationToken ct)
+    {
+        _db.Students.Remove(student);
+        await _db.SaveChangesAsync(ct);
     }
 }
