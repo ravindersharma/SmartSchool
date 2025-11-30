@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SmartSchool.Application.Behaviors
 {
@@ -17,6 +14,8 @@ namespace SmartSchool.Application.Behaviors
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
         {
+
+
             if (_validators.Any())
             {
                 var context = new ValidationContext<TRequest>(request);

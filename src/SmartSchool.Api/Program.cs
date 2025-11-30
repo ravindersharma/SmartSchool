@@ -43,19 +43,6 @@ builder.Services.AddTransient<ExceptionMiddleware>();
 //Build App
 var app = builder.Build();
 
-
-//Exception Handling Middleware for prod vs dev
-if (app.Environment.IsDevelopment())
-{
-    //Detailed error in dev
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    //Firendly error in prod  . we commmented it out since we are using middlerware for error 
-    //app.UseExceptionHandler("/error");
-}
-
 //Swagger or OpenAPI for Development only
 if (app.Environment.IsDevelopment())
 {
@@ -69,7 +56,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+//Order of middlerwares matters so please don't nreak it 
 
+//custom middlewares should be befor http verbs because they break the pipline ,
+
+//so we must place it near the top before any exception happen
+app.UseMiddleware<ExceptionMiddleware>();
+//https rdeirection
+app.UseHttpsRedirection();
 
 // Security
 app.UseAuthentication();
@@ -77,12 +71,7 @@ app.UseAuthorization();
 
 //Loggine request 
 app.UseSerilogRequestLogging();
-//https rdeirection
-app.UseHttpsRedirection();
 
-
-//custom middlewares should be befor http verbs because they break the pipline 
-app.UseMiddleware<ExceptionMiddleware>();
 
 //Map Endpoints
 app.MapStudentEndpoints();
