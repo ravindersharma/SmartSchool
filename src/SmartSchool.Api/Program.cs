@@ -7,18 +7,20 @@ using SmartSchool.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddOpenApi();
-//Logging
-// serilog to get config from appsettings.json
+// -----------------------------------------------------------------------------
+// Logging (Serilog) from appsettings.json
+// -----------------------------------------------------------------------------
 builder.Host.UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration).WriteTo.Console());
 
-//Configuration and services
-//Layers
+// -----------------------------------------------------------------------------
+// Core Application Layers
+// -----------------------------------------------------------------------------
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
-// Authentication + Authrization 
+// -----------------------------------------------------------------------------
+// Authentication + Authorization
+// -----------------------------------------------------------------------------
 builder.Services.AddAuthentication(opts =>
 {
     opts.DefaultAuthenticateScheme = "Bearer";
@@ -32,51 +34,65 @@ builder.Services.AddAuthentication(opts =>
 builder.Services.AddAuthorization();
 
 
-//OpenApi
+// -----------------------------------------------------------------------------
+// OpenAPI / Swagger
+// -----------------------------------------------------------------------------
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();//optional
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSwaggerGen();
+}
 
-//register custom servies or middlerware before use them
-builder.Services.AddTransient<ExceptionMiddleware>();
+// -----------------------------------------------------------------------------
+// Middleware injected through UseMiddleware<T> does not need DI registration unless it has constructor dependencies other than RequestDelegate
+// -----------------------------------------------------------------------------
+//builder.Services.AddTransient<ExceptionMiddleware>();
+//builder.Services.AddTransient<LoggingMiddleware>();
 
-//Build App
+// -----------------------------------------------------------------------------
+// Build App
+// -----------------------------------------------------------------------------
 var app = builder.Build();
 
-//Swagger or OpenAPI for Development only
+// 1) OpenAPI Only in Development
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();  // exposes openapi.json
-    //optional swagger ui development only
-    app.UseSwagger(); // swagger.json
+    app.MapOpenApi();
+
+    app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.RoutePrefix = string.Empty;   // Load Swagger at "/"
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");    // IMPORTANT: starts with '/'
+        c.RoutePrefix = string.Empty;
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
     });
 }
 
-//Order of middlerwares matters so please don't nreak it 
 
-//custom middlewares should be befor http verbs because they break the pipline ,
+// -----------------------------------------------------------------------------
+// MIDDLEWARE ORDER (DO NOT BREAK)
+// -----------------------------------------------------------------------------
 
-//so we must place it near the top before any exception happen
+// 1) GLOBAL EXCEPTION HANDLER (MUST COME FIRST)
 app.UseMiddleware<ExceptionMiddleware>();
-//https rdeirection
+
+// 2) REQUEST LOGGING (before auth, after exception)
+app.UseMiddleware<LoggingMiddleware>();
+
+// 3) HTTPS
 app.UseHttpsRedirection();
 
-// Security
+// 4) SECURITY PIPELINE
 app.UseAuthentication();
 app.UseAuthorization();
 
-//Loggine request 
-app.UseSerilogRequestLogging();
-
-
-//Map Endpoints
+// -----------------------------------------------------------------------------
+// ENDPOINTS
+// -----------------------------------------------------------------------------
 app.MapStudentEndpoints();
 
-
-
+// -----------------------------------------------------------------------------
+// RUN
+// -----------------------------------------------------------------------------
 app.Run();
 

@@ -15,7 +15,7 @@ public static class ApplicationServiceRegistration
         // Register application services here
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
-        var config= MapsterConfig.CreateConfig();
+        var config = MapsterConfig.CreateConfig();
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
 
@@ -23,6 +23,9 @@ public static class ApplicationServiceRegistration
 
         //Automatice validation behavior registeration 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        //loggin pipeline behavior can be added here
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
         return services;
     }
 
