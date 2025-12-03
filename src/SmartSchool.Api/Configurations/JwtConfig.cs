@@ -14,9 +14,9 @@ namespace SmartSchool.Api.Configurations
             var jwtSection = config.GetSection("Jwt"); ;
 
             var key = jwtSection["Key"] ?? throw new Exception("Key not configured");
-            var issuer = config["Jwt:Issuer"] ?? throw new Exception("Issuer not configured");
+            var issuer = jwtSection["Issuer"] ?? throw new Exception("Issuer not configured");
             var audience = jwtSection["Audience"] ?? throw new Exception("Audience not configured");
-
+            var expirationMinutes = int.TryParse(jwtSection["ExpiryMinutes"], out var minutes) ? minutes : 60;
 
             return new TokenValidationParameters
             {
@@ -24,7 +24,6 @@ namespace SmartSchool.Api.Configurations
                 ValidateAudience = true,
                 ValidateLifetime =  true,
                 ValidateIssuerSigningKey = true,
-
 
                 ValidIssuer = issuer,
                 ValidAudience = audience,
