@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SmartSchool.Infrastructure.Services;
+namespace SmartSchool.Infrastructure.Services.Auth;
 
 public interface IJwtService
 {

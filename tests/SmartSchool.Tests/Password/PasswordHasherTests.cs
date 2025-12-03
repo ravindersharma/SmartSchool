@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using SmartSchool.Infrastructure.Services;
+using SmartSchool.Infrastructure.Services.Auth;
 
 namespace SmartSchool.Tests.Password
 {

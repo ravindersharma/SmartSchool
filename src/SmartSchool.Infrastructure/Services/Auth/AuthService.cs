@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Application.Auth.Interfaces;
+using SmartSchool.Application.Common.Interfaces;
 using SmartSchool.Domain.Entities;
-using SmartSchool.Infrastructure.Persistence;
-using System.Net;
 using System.Security.Cryptography;
 
-namespace SmartSchool.Infrastructure.Services
+namespace SmartSchool.Infrastructure.Services.Auth
 {
     public class AuthService : IAuthService
     {
@@ -16,14 +15,18 @@ namespace SmartSchool.Infrastructure.Services
         private readonly IPasswordResetTokenRespository _passwordResetTokenRespository;
         private readonly IJwtService _jwt;
         private readonly IConfiguration _config;
-
-        public AuthService(IUserRspository userRepo, IRefreshTokenRespository refreshTokenRepo, IJwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository)
+        private readonly IEmailSender _emailSender;
+        private readonly IEmailTemplateService _emailTemplateService;
+        public AuthService(IUserRspository userRepo, IRefreshTokenRespository refreshTokenRepo, IJwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
+         emailSender, IEmailTemplateService emailTemplateService)
         {
             _userRepo = userRepo;
             _refreshTokenRepo = refreshTokenRepo;
             _jwt = jwt;
             _config = config;
             _passwordResetTokenRespository = passwordResetTokenRespository;
+            _emailSender = emailSender;
+            _emailTemplateService = emailTemplateService;
         }
 
         public async Task<Result> ForgotPasswordAsync(string email, string origin, CancellationToken ct)
@@ -45,6 +48,16 @@ namespace SmartSchool.Infrastructure.Services
             await _passwordResetTokenRespository.AddAsync(reset, ct);
 
             // Send email with origin + token link (not implemented here) - return token for dev
+            var template = _emailTemplateService.Render("password-reset",
+                        new Dictionary<string, string>
+                        {
+                            { "UserName", user.UserName },
+                            { "ResetUrl", $"{origin}/reset-password?token={reset.Token}" }
+                        }
+                    );
+
+            await _emailSender.SendAsync(user.Email, "Password Reset", template);
+
             return Result.Ok();
         }
 
