@@ -32,6 +32,9 @@ public static class InfrastructureServiceRegistration
         bool useStub = config.GetSection("UseStubEmail").Value == "true";
         bool useSendGrid = config.GetSection("UseSendGrid").Value == "true";
 
+        // Email Queue 
+        services.AddSingleton<IEmailQueue, EmailQueue>();
+
         //Template service
         services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
 

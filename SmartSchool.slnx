@@ -5,6 +5,7 @@
     <Project Path="src/SmartSchool.Domain/SmartSchool.Domain.csproj" />
     <Project Path="src/SmartSchool.Infrastructure/SmartSchool.Infrastructure.csproj" />
     <Project Path="src/SmartSchool.Shared/SmartSchool.Shared.csproj" />
+    <Project Path="src/SmartSchool.Worker/SmartSchool.Worker.csproj" Id="1c450883-e831-46b7-943e-5ebc7373fde2" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SmartSchool.Tests/SmartSchool.Tests.csproj" />
