@@ -9,7 +9,7 @@ namespace SmartSchool.Infrastructure.Services
         private const int SaltSize = 16; // 128 bits
         private const int SaltLength = 32;  //256 bits
 
-        public static string HashPassword(string password)
+        public static string Hash(string password)
         {
             var salt = RandomNumberGenerator.GetBytes(SaltSize);
             var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, SaltLength);
@@ -19,7 +19,7 @@ namespace SmartSchool.Infrastructure.Services
             return Convert.ToBase64String(hashBytes);
         }
 
-        public static bool VerifyPassword(string password, string hashedPassword)
+        public static bool Verify(string password, string hashedPassword)
         {
             var hashBytes = Convert.FromBase64String(hashedPassword);
             var salt = new byte[SaltSize];

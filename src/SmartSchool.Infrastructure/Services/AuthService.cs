@@ -53,7 +53,7 @@ namespace SmartSchool.Infrastructure.Services
             var user = await _userRepo.GetByEmailAsync(dto.Email.ToLowerInvariant(), ct);
             if (user == null) return Result.Fail<AuthResponseDto>("Invalid email or password");
 
-            var ok = PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash);
+            var ok = PasswordHasher.Verify(dto.Password, user.PasswordHash);
             if (!ok) return Result.Fail<AuthResponseDto>("Invalid email or password");
 
             user.LastLoginAt = DateTime.UtcNow;
@@ -122,7 +122,7 @@ namespace SmartSchool.Infrastructure.Services
                 Email = dto.Email.ToLowerInvariant(),
                 UserName = dto.UserName,
                 Role = string.IsNullOrWhiteSpace(dto.Role) ? "User" : dto.Role,
-                PasswordHash = PasswordHasher.HashPassword(dto.Password),
+                PasswordHash = PasswordHasher.Hash(dto.Password),
                 IsEmailConfirmed = false,
                 CreatedAt = DateTime.UtcNow
             };
@@ -163,7 +163,7 @@ namespace SmartSchool.Infrastructure.Services
             var user = await _userRepo.GetByIdAsunc(reset.UserId, ct);
             if (user == null) return Result.Fail("User not found");
 
-            user.PasswordHash = PasswordHasher.HashPassword(dto.NewPassword);
+            user.PasswordHash = PasswordHasher.Hash(dto.NewPassword);
             reset.Used = true;
             await _passwordResetTokenRespository.UpdateAsync(reset, ct);
             return Result.Ok();
