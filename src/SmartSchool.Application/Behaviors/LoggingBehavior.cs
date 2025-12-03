@@ -28,11 +28,8 @@ namespace SmartSchool.Application.Behaviors
             {
                 sw.Stop();
                 Log.Error(ex, "Error handling {RequestName} after {ElapsedMilliseconds}ms | CorrelationId: {CorrelationId}", requestName, sw.ElapsedMilliseconds, correlationId);
-
                 throw;
-
             }
-
 
         }
     }

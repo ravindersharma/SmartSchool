@@ -9,6 +9,11 @@ public class SchoolDbContext : DbContext
     {
     }
     public DbSet<Student> Students => Set<Student>();
+    public DbSet<User> Users => Set<User>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
