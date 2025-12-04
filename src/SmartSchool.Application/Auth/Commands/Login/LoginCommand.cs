@@ -5,5 +5,5 @@ using SmartSchool.Application.Auth.Dtos;
 
 namespace SmartSchool.Application.Auth.Commands.Login
 {
-    public record LoginCommand(LoginRequestDto Request, string IpAddress) : IRequest<Result<AuthResponseDto>>;
+    public record LoginCommand(LoginRequestDto Dto, string IpAddress) : IRequest<Result<AuthResponseDto>>;
 }

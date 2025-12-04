@@ -1,3 +1,5 @@
 ﻿namespace SmartSchool.Application.Auth.Dtos;
 
-public record ResetPasswordRequestDto(string Token, string NewPassword);
+public record ResetPasswordRequestDto(string Token,
+    string Password,
+    string ConfirmPassword);

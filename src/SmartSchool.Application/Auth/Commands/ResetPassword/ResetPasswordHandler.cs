@@ -8,6 +8,6 @@ namespace SmartSchool.Application.Auth.Commands.ResetPassword
     {
         private readonly IAuthService _auth;
         public ResetPasswordHandler(IAuthService auth) => _auth = auth;
-        public async Task<Result> Handle(ResetPasswordCommand request, CancellationToken ct) => await _auth.ResetPasswordAsync(request.Request, ct);
+        public async Task<Result> Handle(ResetPasswordCommand request, CancellationToken ct) => await _auth.ResetPasswordAsync(request.Dto, ct);
     }
 }

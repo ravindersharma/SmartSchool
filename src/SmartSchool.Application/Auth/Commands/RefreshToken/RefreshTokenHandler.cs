@@ -10,6 +10,6 @@ namespace SmartSchool.Application.Auth.Commands.RefreshToken
         private readonly IAuthService _auth;
         public RefreshTokenHandler(IAuthService auth) => _auth = auth;
 
-        public async Task<Result<AuthResponseDto>> Handle(RefreshTokenCommand request, CancellationToken ct) => await _auth.RefreshTokenAsync(request.Token, request.IpAddress, ct);
+        public async Task<Result<AuthResponseDto>> Handle(RefreshTokenCommand request, CancellationToken ct) => await _auth.RefreshTokenAsync(request.RefreshToken, request.IpAddress, ct);
     }
 }

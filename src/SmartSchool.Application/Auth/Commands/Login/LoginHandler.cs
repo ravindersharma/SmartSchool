@@ -11,6 +11,6 @@ namespace SmartSchool.Application.Auth.Commands.Login
 
         public LoginHandler(IAuthService auth) => _auth = auth;
 
-        public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken ct) => await _auth.LoginAsync(request.Request, request.IpAddress, ct);
+        public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken ct) => await _auth.LoginAsync(request.Dto, request.IpAddress, ct);
     }
 }

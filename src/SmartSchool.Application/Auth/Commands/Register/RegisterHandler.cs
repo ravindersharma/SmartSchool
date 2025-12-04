@@ -11,6 +11,6 @@ namespace SmartSchool.Application.Auth.Commands.Register
         private readonly IAuthService _auth;
         public RegisterHandler(IAuthService auth) => _auth = auth;
 
-        public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, CancellationToken ct) => await _auth.RegisterAsync(request.Request, request.Origin, ct);
+        public async Task<Result<AuthResponseDto>> Handle(RegisterCommand request, CancellationToken ct) => await _auth.RegisterAsync(request.Dto, request.Origin, ct);
     }
 }
