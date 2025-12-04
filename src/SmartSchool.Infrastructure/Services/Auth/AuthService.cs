@@ -4,6 +4,7 @@ using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Application.Auth.Interfaces;
 using SmartSchool.Application.Common.Interfaces;
 using SmartSchool.Domain.Entities;
+using SmartSchool.Infrastructure.Services.Email;
 using System.Security.Cryptography;
 
 namespace SmartSchool.Infrastructure.Services.Auth
@@ -17,8 +18,9 @@ namespace SmartSchool.Infrastructure.Services.Auth
         private readonly IConfiguration _config;
         private readonly IEmailSender _emailSender;
         private readonly IEmailTemplateService _emailTemplateService;
+        private readonly IEmailQueue _emailQueue;
         public AuthService(IUserRspository userRepo, IRefreshTokenRespository refreshTokenRepo, IJwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
-         emailSender, IEmailTemplateService emailTemplateService)
+         emailSender, IEmailTemplateService emailTemplateService, IEmailQueue emailQueue)
         {
             _userRepo = userRepo;
             _refreshTokenRepo = refreshTokenRepo;
@@ -27,6 +29,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             _passwordResetTokenRespository = passwordResetTokenRespository;
             _emailSender = emailSender;
             _emailTemplateService = emailTemplateService;
+            _emailQueue = emailQueue;
         }
 
         public async Task<Result> ForgotPasswordAsync(string email, string origin, CancellationToken ct)
@@ -165,6 +168,19 @@ namespace SmartSchool.Infrastructure.Services.Auth
             await _refreshTokenRepo.AddAsync(refresh, ct);
 
             var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role, jwtToken, refereshToken, jwtExpiresAt);
+
+            // Send welcome email using Worker queue
+            var body = _emailTemplateService.Render("welcome", new()
+            {
+                { "UserName", dtoOut.UserName }
+            });
+
+            await _emailQueue.EnqueueAsync(new QueuedEmail(
+                dtoOut.Email,
+                "Welcome to SmartSchool",
+                body
+            ));
+
             return Result.Ok(dtoOut);
         }
 
