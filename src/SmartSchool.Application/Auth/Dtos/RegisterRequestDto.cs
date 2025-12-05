@@ -1,3 +1,5 @@
-﻿namespace SmartSchool.Application.Auth.Dtos;
+﻿using SmartSchool.Domain.Enums;
 
-public record RegisterRequestDto(string Email, string UserName, string Password, string Role = "User");
+namespace SmartSchool.Application.Auth.Dtos;
+
+public record RegisterRequestDto(string Email, string UserName, string Password, string Role);

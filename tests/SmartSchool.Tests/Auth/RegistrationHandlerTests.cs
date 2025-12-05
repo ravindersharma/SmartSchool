@@ -5,6 +5,7 @@ using SmartSchool.Application.Auth.Commands.Register;
 using SmartSchool.Application.Auth.Commands.RegisterUser;
 using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Application.Auth.Interfaces;
+using SmartSchool.Domain.Enums;
 
 namespace SmartSchool.Tests.Auth
 {
@@ -16,7 +17,7 @@ namespace SmartSchool.Tests.Auth
             // Arrange
             var authService = Substitute.For<IAuthService>();
             var handler = new RegisterHandler(authService);
-            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123");
+            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123", Role.Student.ToString());
             var expected = new AuthResponseDto(Guid.NewGuid(), dto.Email, dto.UserName, "User", "jwt", "rt", DateTime.UtcNow);
 
             authService.RegisterAsync(dto, Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -36,7 +37,7 @@ namespace SmartSchool.Tests.Auth
             // Arrange
             var authService = Substitute.For<IAuthService>();
             var handler = new RegisterHandler(authService);
-            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123");
+            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123",Role.Student.ToString());
 
             authService.RegisterAsync(dto, Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(Result.Fail<AuthResponseDto>("Registration failed"));
@@ -53,7 +54,7 @@ namespace SmartSchool.Tests.Auth
             // Arrange
             var authService = Substitute.For<IAuthService>();
             var handler = new RegisterHandler(authService);
-            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123");
+            var dto = new RegisterRequestDto("test@email.com", "test", "Pass@123", Role.Student.ToString());
             authService.RegisterAsync(dto, Arg.Any<string>(), Arg.Any<CancellationToken>())
                 .Returns(Result.Fail<AuthResponseDto>("Email already exists"));
 

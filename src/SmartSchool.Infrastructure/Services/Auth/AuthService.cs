@@ -4,6 +4,7 @@ using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Application.Auth.Interfaces;
 using SmartSchool.Application.Common.Interfaces;
 using SmartSchool.Domain.Entities;
+using SmartSchool.Domain.Enums;
 using SmartSchool.Infrastructure.Services.Email;
 using System.Security.Cryptography;
 
@@ -76,7 +77,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             await _userRepo.UpdateAsync(user, ct);
 
             //Create JWT token
-            var jwtToken = _jwt.GenerateJwtToken(user.Id, user.Email, user.Role, out var jwtExpiresAt);
+            var jwtToken = _jwt.GenerateJwtToken(user.Id, user.Email, user.Role.ToString(), out var jwtExpiresAt);
             var refereshToken = _jwt.GenerateRefreshToken();
             var refresh = new RefreshToken
             {
@@ -89,7 +90,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             };
 
             await _refreshTokenRepo.AddAsync(refresh, ct);
-            var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role, jwtToken, refereshToken, jwtExpiresAt);
+            var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role.ToString(), jwtToken, refereshToken, jwtExpiresAt);
             return Result.Ok(dtoOut);
         }
 
@@ -121,8 +122,8 @@ namespace SmartSchool.Infrastructure.Services.Auth
             refreshToken.ReplacedByToken = newRefreshToken;
             await _refreshTokenRepo.AddAsync(refreshToken, ct);
 
-            var jwtToken = _jwt.GenerateJwtToken(refreshToken.User!.Id, refreshToken.User.Email, refreshToken.User.Role, out var jwtExpiresAt);
-            var dtoOut = new AuthResponseDto(refreshToken.User.Id, refreshToken.User.Email, refreshToken.User.UserName, refreshToken.User.Role, jwtToken, newRefreshToken, jwtExpiresAt);
+            var jwtToken = _jwt.GenerateJwtToken(refreshToken.User!.Id, refreshToken.User.Email, refreshToken.User.Role.ToString(), out var jwtExpiresAt);
+            var dtoOut = new AuthResponseDto(refreshToken.User.Id, refreshToken.User.Email, refreshToken.User.UserName, refreshToken.User.Role.ToString(), jwtToken, newRefreshToken, jwtExpiresAt);
 
             return Result.Ok(dtoOut);
         }
@@ -137,7 +138,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
                 Id = Guid.NewGuid(),
                 Email = dto.Email.ToLowerInvariant(),
                 UserName = dto.UserName,
-                Role = string.IsNullOrWhiteSpace(dto.Role) ? "User" : dto.Role,
+                Role = string.IsNullOrWhiteSpace(dto.Role) ? Role.Student : Enum.Parse<Role>(dto.Role, true),
                 PasswordHash = PasswordHasher.Hash(dto.Password),
                 IsEmailConfirmed = false,
                 CreatedAt = DateTime.UtcNow
@@ -151,7 +152,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             await _userRepo.UpdateAsync(user, ct);
 
             //Create JWT token
-            var jwtToken = _jwt.GenerateJwtToken(user.Id, user.Email, user.Role, out var jwtExpiresAt);
+            var jwtToken = _jwt.GenerateJwtToken(user.Id, user.Email, user.Role.ToString(), out var jwtExpiresAt);
             var refereshToken = _jwt.GenerateRefreshToken();
 
             var refresh = new RefreshToken
@@ -167,7 +168,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
 
             await _refreshTokenRepo.AddAsync(refresh, ct);
 
-            var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role, jwtToken, refereshToken, jwtExpiresAt);
+            var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role.ToString(), jwtToken, refereshToken, jwtExpiresAt);
 
             // Send welcome email using Worker queue
             var body = _emailTemplateService.Render("welcome", new()
