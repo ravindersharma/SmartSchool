@@ -8,6 +8,6 @@ namespace SmartSchool.Application.Auth.Commands.RevokeToken
     {
         private readonly IAuthService _auth;
         public RevokeTokenHandler(IAuthService auth)=>_auth=auth;
-        public async Task<Result> Handle(RevokeTokenCommand request, CancellationToken ct)=> await _auth.RevokeRefreshTokenAsync(request.Token, request.IpAddress, ct);
+        public async Task<Result> Handle(RevokeTokenCommand request, CancellationToken ct)=> await _auth.RevokeRefreshTokenAsync(request.RefreshToken, request.IpAddress, ct);
     }
 }

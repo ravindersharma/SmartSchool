@@ -3,6 +3,7 @@ using SmartSchool.Api.Configurations;
 using SmartSchool.Api.Endpoints;
 using SmartSchool.Api.Middlewares;
 using SmartSchool.Application;
+using SmartSchool.Domain.Enums;
 using SmartSchool.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,14 @@ builder.Services.AddAuthentication(opts =>
     opts.TokenValidationParameters = JwtConfig.GetTokenValidationParameters(builder.Configuration);
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(opts =>
+{
+
+    opts.AddPolicy("AdminOnly", policy => policy.RequireRole(Role.Admin.ToString()));
+
+    opts.AddPolicy("TeacherOrAdmin", policy => policy.RequireRole(Role.Admin.ToString(), Role.Teacher.ToString()));
+
+});
 
 
 // -----------------------------------------------------------------------------

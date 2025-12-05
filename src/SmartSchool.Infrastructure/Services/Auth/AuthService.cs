@@ -192,7 +192,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             var user = await _userRepo.GetByIdAsunc(reset.UserId, ct);
             if (user == null) return Result.Fail("User not found");
 
-            user.PasswordHash = PasswordHasher.Hash(dto.NewPassword);
+            user.PasswordHash = PasswordHasher.Hash(dto.Password);
             reset.Used = true;
             await _passwordResetTokenRespository.UpdateAsync(reset, ct);
             return Result.Ok();

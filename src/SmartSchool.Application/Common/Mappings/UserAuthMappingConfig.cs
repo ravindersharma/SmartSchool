@@ -1,9 +1,7 @@
 ﻿using Mapster;
 using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SmartSchool.Domain.Enums;
 
 namespace SmartSchool.Application.Common.Mappings
 {
@@ -16,7 +14,11 @@ namespace SmartSchool.Application.Common.Mappings
                 .Map(dest => dest.UserId, src => src.Id)
                 .Map(dest => dest.Email, src => src.Email)
                 .Map(dest => dest.UserName, src => src.UserName)
-                .Map(dest => dest.Role, src => src.Role);
+                .Map(dest => dest.Role, src => src.Role.ToString());
+
+
+            config.NewConfig<RegisterRequestDto, User>()
+                    .Map(dest => dest.Role, src => Enum.Parse<Role>(src.Role, true));
         }
     }
 }

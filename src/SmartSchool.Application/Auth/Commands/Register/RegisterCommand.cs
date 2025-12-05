@@ -4,5 +4,5 @@ using SmartSchool.Application.Auth.Dtos;
 
 namespace SmartSchool.Application.Auth.Commands.RegisterUser
 {
-    public record RegisterCommand(RegisterRequestDto Request, string Origin) : IRequest<Result<AuthResponseDto>>;
+    public record RegisterCommand(RegisterRequestDto Dto, string Origin) : IRequest<Result<AuthResponseDto>>;
 }
