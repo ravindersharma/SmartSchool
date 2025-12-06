@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using SmartSchool.Application.Auth.Dtos;
 using SmartSchool.Application.Auth.Interfaces;
 using SmartSchool.Application.Common.Interfaces;
+using SmartSchool.Application.Users.Interfaces;
 using SmartSchool.Domain.Entities;
 using SmartSchool.Domain.Enums;
 using SmartSchool.Infrastructure.Services.Email;
@@ -12,16 +13,19 @@ namespace SmartSchool.Infrastructure.Services.Auth
 {
     public class AuthService : IAuthService
     {
-        private readonly IUserRspository _userRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IRefreshTokenRespository _refreshTokenRepo;
         private readonly IPasswordResetTokenRespository _passwordResetTokenRespository;
         private readonly IJwtService _jwt;
+        private readonly IPasswordHasher _hasher;
         private readonly IConfiguration _config;
         private readonly IEmailSender _emailSender;
         private readonly IEmailTemplateService _emailTemplateService;
         private readonly IEmailQueue _emailQueue;
-        public AuthService(IUserRspository userRepo, IRefreshTokenRespository refreshTokenRepo, IJwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
-         emailSender, IEmailTemplateService emailTemplateService, IEmailQueue emailQueue)
+
+
+        public AuthService(IUserRepository userRepo, IRefreshTokenRespository refreshTokenRepo, JwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
+         emailSender, IEmailTemplateService emailTemplateService, IEmailQueue emailQueue,IPasswordHasher hasher )
         {
             _userRepo = userRepo;
             _refreshTokenRepo = refreshTokenRepo;
@@ -31,6 +35,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             _emailSender = emailSender;
             _emailTemplateService = emailTemplateService;
             _emailQueue = emailQueue;
+            _hasher = hasher;
         }
 
         public async Task<Result> ForgotPasswordAsync(string email, string origin, CancellationToken ct)
@@ -70,7 +75,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             var user = await _userRepo.GetByEmailAsync(dto.Email.ToLowerInvariant(), ct);
             if (user == null) return Result.Fail<AuthResponseDto>("Invalid email or password");
 
-            var ok = PasswordHasher.Verify(dto.Password, user.PasswordHash);
+            var ok = _hasher.Verify(dto.Password, user.PasswordHash);
             if (!ok) return Result.Fail<AuthResponseDto>("Invalid email or password");
 
             user.LastLoginAt = DateTime.UtcNow;
@@ -139,7 +144,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
                 Email = dto.Email.ToLowerInvariant(),
                 UserName = dto.UserName,
                 Role = string.IsNullOrWhiteSpace(dto.Role) ? Role.Student : Enum.Parse<Role>(dto.Role, true),
-                PasswordHash = PasswordHasher.Hash(dto.Password),
+                PasswordHash =_hasher.Hash(dto.Password),
                 IsEmailConfirmed = false,
                 CreatedAt = DateTime.UtcNow
             };
@@ -190,10 +195,10 @@ namespace SmartSchool.Infrastructure.Services.Auth
             var reset = await _passwordResetTokenRespository.GetByTokenAsync(dto.Token, ct);
             if (reset == null || reset.Used || reset.ExpiresAt < DateTime.UtcNow) return Result.Fail("Invalid or expired token");
 
-            var user = await _userRepo.GetByIdAsunc(reset.UserId, ct);
+            var user = await _userRepo.GetByIdAsync(reset.UserId, ct);
             if (user == null) return Result.Fail("User not found");
 
-            user.PasswordHash = PasswordHasher.Hash(dto.Password);
+            user.PasswordHash = _hasher.Hash(dto.Password);
             reset.Used = true;
             await _passwordResetTokenRespository.UpdateAsync(reset, ct);
             return Result.Ok();

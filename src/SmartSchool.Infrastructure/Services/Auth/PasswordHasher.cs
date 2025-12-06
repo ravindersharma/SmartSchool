@@ -1,15 +1,16 @@
-﻿using System.Security.Cryptography;
+﻿using SmartSchool.Application.Auth.Interfaces;
+using System.Security.Cryptography;
 
 namespace SmartSchool.Infrastructure.Services.Auth
 {
-    public static class PasswordHasher
+    public class PasswordHasher : IPasswordHasher
     {
         //PKBDF2 with HMAC-SHA256, 100,000 iterations
         private const int Iterations = 100000;
         private const int SaltSize = 16; // 128 bits
         private const int SaltLength = 32;  //256 bits
 
-        public static string Hash(string password)
+        public string Hash(string password)
         {
             var salt = RandomNumberGenerator.GetBytes(SaltSize);
             var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, SaltLength);
@@ -19,7 +20,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
             return Convert.ToBase64String(hashBytes);
         }
 
-        public static bool Verify(string password, string hashedPassword)
+        public bool Verify(string password, string hashedPassword)
         {
             var hashBytes = Convert.FromBase64String(hashedPassword);
             var salt = new byte[SaltSize];
