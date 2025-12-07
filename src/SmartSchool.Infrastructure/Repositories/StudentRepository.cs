@@ -20,7 +20,15 @@ public class StudentRepository : IStudentRepository
 
     public async Task<Student?> GetByIdAsync(Guid id, CancellationToken ct)
     {
-        return await _db.Students.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
+        return await _db.Students.FirstOrDefaultAsync(s => s.Id == id  && !s.IsDeleted , ct);
+    }
+    public async Task<Student?> GetFullByIdAsync(Guid id, CancellationToken ct)
+    {
+        return await _db.Students.Include(s=>s.User).FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted, ct);
+    }
+    public async Task<Student?> GetByUserIdAsync(Guid userId, CancellationToken ct)
+    {
+        return await _db.Students.Include(s => s.User).FirstOrDefaultAsync(s => s.UserId == userId && !s.IsDeleted, ct);
     }
 
     public async Task<PagedResult<Student>> GetPagedAsync(int page, int pageSize, CancellationToken ct)
@@ -42,5 +50,5 @@ public class StudentRepository : IStudentRepository
     {
         _db.Students.Remove(student);
         await _db.SaveChangesAsync(ct);
-    }
+    } 
 }

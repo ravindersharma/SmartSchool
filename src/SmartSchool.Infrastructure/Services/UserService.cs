@@ -76,7 +76,7 @@ namespace SmartSchool.Infrastructure.Services
         {
             var pagedUsers = await _repo.GetPagedAsync(page, pageSize, ct);
             var dtoItems = pagedUsers.Items.Select(u => u.Adapt<UserDto>());
-            return Result.Ok(new PagedResult<UserDto>(dtoItems, pagedUsers.TotalItems, page, pageSize));
+            return Result.Ok(new PagedResult<UserDto>(dtoItems, pagedUsers.TotalCount, page, pageSize));
         }
 
         public async Task<Result> RestoreAsync(Guid id, CancellationToken ct)
