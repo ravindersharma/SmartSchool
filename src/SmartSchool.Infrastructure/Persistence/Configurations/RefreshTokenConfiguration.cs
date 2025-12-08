@@ -13,6 +13,7 @@ namespace SmartSchool.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Token).IsRequired();
             builder.Property(x => x.ExpiresAt).IsRequired();
             builder.HasOne(r => r.User).WithMany(u => u.RefreshTokens).HasForeignKey(r => r.UserId);
+            builder.Property(x => x.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
         }
     }
 }

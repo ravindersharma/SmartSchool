@@ -28,9 +28,8 @@ public static class AuthEndpoints
         .AllowAnonymous()
         .WithName("RegisterUser")
         .WithSummary("Register a new user")
-         .Produces(StatusCodes.Status201Created)
+        .Produces(StatusCodes.Status201Created)
         .Produces(StatusCodes.Status400BadRequest);
-        ;
 
 
         //Login
@@ -69,7 +68,7 @@ public static class AuthEndpoints
         .WithName("ForgotPassword")
         .WithSummary("Request password reset")
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest); 
+        .Produces(StatusCodes.Status400BadRequest);
 
 
         //Reset Password

@@ -1,4 +1,5 @@
 ﻿using SmartSchool.Domain.Entities;
+using SmartSchool.Shared;
 
 namespace SmartSchool.Application.Students.Interfaces
 {
@@ -6,7 +7,9 @@ namespace SmartSchool.Application.Students.Interfaces
     {
         Task<Student> AddAsync(Student student, CancellationToken ct);
         Task<Student?> GetByIdAsync(Guid Id, CancellationToken ct);
-        Task<IEnumerable<Student>> GetPagedAsync(int page, int pageSize, CancellationToken ct);
+        Task<Student?> GetFullByIdAsync(Guid Id, CancellationToken ct);
+        Task<Student?> GetByUserIdAsync(Guid userId, CancellationToken ct);
+        Task<PagedResult<Student>> GetPagedAsync(int page, int pageSize, CancellationToken ct);
         Task<Student> UpdateAsync(Student student, CancellationToken ct);
         Task DeleteAsync(Student student, CancellationToken ct);
 

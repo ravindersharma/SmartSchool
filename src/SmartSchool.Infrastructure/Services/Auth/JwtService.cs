@@ -1,18 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using SmartSchool.Application.Auth.Interfaces;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace SmartSchool.Infrastructure.Services.Auth;
-
-public interface IJwtService
-{
-    string GenerateJwtToken(Guid userId, string email, string role, out DateTime expiresAt);
-    string GenerateRefreshToken();
-}
-
 
 public class JwtService : IJwtService
 {
