@@ -7,6 +7,7 @@ using SmartSchool.Application.Students.Interfaces;
 using SmartSchool.Application.Users.Interfaces;
 using SmartSchool.Infrastructure.Persistence;
 using SmartSchool.Infrastructure.Repositories;
+using SmartSchool.Infrastructure.Services;
 using SmartSchool.Infrastructure.Services.Auth;
 using SmartSchool.Infrastructure.Services.Email;
 namespace SmartSchool.Infrastructure;
@@ -28,6 +29,9 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IRefreshTokenRespository, RefreshTokenRespository>();
         services.AddScoped<IPasswordResetTokenRespository, PasswordResetTokenRespository>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<IUserService, UserService>();
+
         services.AddSingleton<IJwtService, JwtService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
