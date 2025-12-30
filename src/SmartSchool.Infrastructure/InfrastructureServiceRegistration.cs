@@ -28,11 +28,10 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRespository, RefreshTokenRespository>();
         services.AddScoped<IPasswordResetTokenRespository, PasswordResetTokenRespository>();
-        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<IUserService, UserService>();
-
-        services.AddSingleton<IJwtService, JwtService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IJwtService, JwtService>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
         bool useStub = config.GetSection("UseStubEmail").Value == "true";

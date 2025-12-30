@@ -4,11 +4,12 @@ using SmartSchool.Domain.Entities;
 
 namespace SmartSchool.Infrastructure.Persistence.Configurations
 {
-    public class StudentConfiguration : IEntityTypeConfiguration<Student>
+    public class StudentConfiguration : BaseEntityConfiguration<Student>
     {
-        public void Configure(EntityTypeBuilder<Student> builder)
+        public override void Configure(EntityTypeBuilder<Student> builder)
         {
             builder.ToTable("Students");
+            base.Configure(builder);
             builder.HasKey(s => s.Id);
             builder.Property(s => s.FullName)
                    .IsRequired()
@@ -18,6 +19,9 @@ namespace SmartSchool.Infrastructure.Persistence.Configurations
             builder.Property(s => s.CreatedAt)
                    .HasDefaultValueSql("GETDATE()")
                    .ValueGeneratedOnAdd();
+            //builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+
+            //builder.HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }

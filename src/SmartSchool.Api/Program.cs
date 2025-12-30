@@ -47,10 +47,13 @@ builder.Services.AddAuthorization(opts =>
 // -----------------------------------------------------------------------------
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddTransient<LoggingMiddleware>();
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddSwaggerGen();
 }
+
 
 // -----------------------------------------------------------------------------
 // Middleware injected through UseMiddleware<T> does not need DI registration unless it has constructor dependencies other than RequestDelegate
@@ -97,6 +100,8 @@ app.UseAuthorization();
 // -----------------------------------------------------------------------------
 // ENDPOINTS
 // -----------------------------------------------------------------------------
+
+app.MapAuthEndpoints();
 app.MapStudentEndpoints();
 
 // -----------------------------------------------------------------------------

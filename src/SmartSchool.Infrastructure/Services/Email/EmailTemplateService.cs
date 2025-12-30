@@ -21,7 +21,7 @@ public class EmailTemplateService : IEmailTemplateService
         {
             _basePath = Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
-                "EmailTemplates"
+                "Templates"
             );
         }
     }

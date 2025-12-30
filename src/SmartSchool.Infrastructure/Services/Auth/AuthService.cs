@@ -24,7 +24,7 @@ namespace SmartSchool.Infrastructure.Services.Auth
         private readonly IEmailQueue _emailQueue;
 
 
-        public AuthService(IUserRepository userRepo, IRefreshTokenRespository refreshTokenRepo, JwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
+        public AuthService(IUserRepository userRepo, IRefreshTokenRespository refreshTokenRepo, IJwtService jwt, IConfiguration config, IPasswordResetTokenRespository passwordResetTokenRespository, IEmailSender
          emailSender, IEmailTemplateService emailTemplateService, IEmailQueue emailQueue,IPasswordHasher hasher )
         {
             _userRepo = userRepo;
@@ -56,16 +56,16 @@ namespace SmartSchool.Infrastructure.Services.Auth
 
             await _passwordResetTokenRespository.AddAsync(reset, ct);
 
-            // Send email with origin + token link (not implemented here) - return token for dev
-            var template = _emailTemplateService.Render("password-reset",
-                        new Dictionary<string, string>
-                        {
-                            { "UserName", user.UserName },
-                            { "ResetUrl", $"{origin}/reset-password?token={reset.Token}" }
-                        }
-                    );
+            //// Send email with origin + token link (not implemented here) - return token for dev
+            //var template = _emailTemplateService.Render("password-reset",
+            //            new Dictionary<string, string>
+            //            {
+            //                { "UserName", user.UserName },
+            //                { "ResetUrl", $"{origin}/reset-password?token={reset.Token}" }
+            //            }
+            //        );
 
-            await _emailSender.SendAsync(user.Email, "Password Reset", template);
+            //await _emailSender.SendAsync(user.Email, "Password Reset", template);
 
             return Result.Ok();
         }
@@ -176,16 +176,16 @@ namespace SmartSchool.Infrastructure.Services.Auth
             var dtoOut = new AuthResponseDto(user.Id, user.Email, user.UserName, user.Role.ToString(), jwtToken, refereshToken, jwtExpiresAt);
 
             // Send welcome email using Worker queue
-            var body = _emailTemplateService.Render("welcome", new()
-            {
-                { "UserName", dtoOut.UserName }
-            });
+            //var body = _emailTemplateService.Render("welcome", new()
+            //{
+            //    { "UserName", dtoOut.UserName }
+            //});
 
-            await _emailQueue.EnqueueAsync(new QueuedEmail(
-                dtoOut.Email,
-                "Welcome to SmartSchool",
-                body
-            ));
+            //await _emailQueue.EnqueueAsync(new QueuedEmail(
+            //    dtoOut.Email,
+            //    "Welcome to SmartSchool",
+            //    body
+            //));
 
             return Result.Ok(dtoOut);
         }

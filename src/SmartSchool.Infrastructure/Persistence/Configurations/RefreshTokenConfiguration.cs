@@ -4,16 +4,22 @@ using SmartSchool.Domain.Entities;
 
 namespace SmartSchool.Infrastructure.Persistence.Configurations
 {
-    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+    public class RefreshTokenConfiguration : BaseEntityConfiguration<RefreshToken>
     {
-        public void Configure(EntityTypeBuilder<RefreshToken> builder)
+        public override void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
+          
+
             builder.ToTable("RefreshTokens");
+            base.Configure(builder);
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Token).IsRequired();
             builder.Property(x => x.ExpiresAt).IsRequired();
             builder.HasOne(r => r.User).WithMany(u => u.RefreshTokens).HasForeignKey(r => r.UserId);
             builder.Property(x => x.CreatedAt).HasDefaultValueSql("GETDATE()").ValueGeneratedOnAdd();
+            builder.Property(x => x.IsDeleted).HasDefaultValue(false);
+
+            builder.HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }
